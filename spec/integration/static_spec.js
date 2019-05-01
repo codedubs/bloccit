@@ -15,5 +15,15 @@ describe("routes : static", () => {
       });
     });
 
+    it("should contain the string polo", (done) => {
+      request.get("/marco", (err, res, body) => {
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toBe("polo");
+
+        done();
+      });
+    });
+
   });
+  
 });
