@@ -1,5 +1,5 @@
 const Topic = require("./models").Topic;
-
+const Post = require("./models").Post;
 
 module.exports = {
 
@@ -25,6 +25,7 @@ module.exports = {
       callback(err);
     })
   },
+
 
   addTopic(newTopic, callback) {
     return Topic.create({
