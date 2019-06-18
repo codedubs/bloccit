@@ -18,9 +18,9 @@
     "body-parser": "^1.19.0",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
-    "pg": "^7.11.0",
+    "pg": "^7.4.1",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^4.44.0",
+    "sequelize": "^4.32.6",
     "sequelize-cli": "^5.5.0"
   }
 }
