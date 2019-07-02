@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     }
+
   }, {});
   Post.associate = function(models) {
     // associations can be defined here
@@ -20,6 +21,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "topicId",
       onDelete: "CASCADE"
     });
+    Post.belongsTo(models.Flair, {
+      foreignKey: "flairId",
+      onDelete: "CASCADE"
+    })
   };
   return Post;
 };
