@@ -38,11 +38,7 @@ module.exports = {
   return Post.findById(req.params.id)
   .then((post) => { console.log("here 2")
 
-
-
-
       const authorized = new Authorizer(req.user, post).destroy();
-
 
       if(authorized) {
         post.destroy()
