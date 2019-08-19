@@ -1,7 +1,8 @@
 const Post = require("./models").Post;
 const Topic = require("./models").Topic;
-const Comment = require("./models").Comment;
 const User = require("./models").User;
+const Comment = require("./models").Comment
+const Authorizer = require("../policies/post");
 
 module.exports = {
 
@@ -25,36 +26,60 @@ module.exports = {
         }]
       }]
     })
-  },
-
-  deletePost(id, callback) {
-    return Post.destroy({
-      where: {id}
-    })
-    .then((deletedRecordsCount) => {
-      callback(null, deletedRecordsCount);
+    .then((post) => {
+      callback(null, post);
     })
     .catch((err) => {
       callback(err);
     })
   },
 
-  updatePost(id, updatedPost, callback) {
-    return Post.findById(id)
+  deletePost(req, callback) { console.log("here 3", req.params)
+  return Post.findById(req.params.id)
+  .then((post) => { console.log("here 2")
+
+
+
+
+      const authorized = new Authorizer(req.user, post).destroy();
+
+
+      if(authorized) {
+        post.destroy()
+        .then((res) => {
+          callback(null, post);
+        });
+      } else {
+        req.flash("notice", "You are not authorized to do that.")
+        callback(401);
+      }
+    })
+    .catch((err) => { console.log("here 1", err)
+      callback(err);
+    });
+  },
+
+  updatePost(req, updatedPost, callback) {
+    return Post.findById(req.params.id)
     .then((post) => {
       if(!post) {
         return callback("Post not found");
       }
-
-      post.update(updatedPost, {
-        fields: Object.keys(updatedPost)
-      })
-      .then(() => {
-        callback(null, post);
-      })
-      .catch((err) => {
-        callback(err);
-      });
+      const authorized = new Authorizer(req.user, post).update();
+      if(authorized) {
+        post.update(updatedPost, {
+          fields: Object.keys(updatedPost)
+        })
+        .then(() => {
+          callback(null, post);
+        })
+        .catch((err) => {
+          callback(err);
+        });
+      } else {
+        req.flash("notice", "You are not authorized to do that.");
+        callback("Forbidden");
+      }
     });
   }
 
