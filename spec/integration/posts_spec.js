@@ -49,6 +49,20 @@ describe("routes : posts", () => {
 
   describe("guest user performing CRUD actions for Post", () => {
 
+    beforeAll((done) => {
+      request.get({
+        url: "http://localhost:3000/auth/fake",
+        form: {
+
+          userId: 0
+
+        }
+      },
+        (err, res, body) => {
+          done();
+        }
+      );
+    });
 
     describe("GET /topics/:topicId/posts/new", () => {
 
@@ -168,7 +182,7 @@ describe("routes : posts", () => {
 
   describe("member user performing CRUD actions for Post", () => {
 
-    beforeEach((done) => {
+    beforeAll((done) => {
       request.get({
         url: "http://localhost:3000/auth/fake",
         form: {

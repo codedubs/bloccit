@@ -3,11 +3,11 @@ const Authorizer = require("../policies/post");
 
 module.exports = {
 
-  new(req, res, next) {
+  new(req, res, next) { console.log(req.user)
     const authorized = new Authorizer(req.user).new();
 
     if(authorized) {
-      res.render("posts/new");
+      res.render("posts/new", {topicId: req.params.topicId});
     } else {
       req.flash("notice", "You are not authorized to do that.");
       res.redirect(401, "/posts");
