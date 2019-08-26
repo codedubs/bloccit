@@ -193,8 +193,84 @@ describe("routes: comments", () => {
             });
         });
       });
+
+      it("a different member user should not delete the comment with the associated ID", (done) => {
+          request.get({
+            url: "http://localhost:3000/auth/fake",
+            form: {
+              role: "member",
+              userId: this.user.id + 1
+            }
+          }, (err, res, body) => {
+
+            Comment.findAll()
+            .then((comments) => {
+              const commentCountBeforeDelete = comments.length;
+
+              expect(commentCountBeforeDelete).toBe(1);
+
+              request.post(
+                `${base}${this.topic.id}/posts/${this.post.id}/comments/${this.comment.id}/destroy`,
+                (err, res, body) => {
+                  Comment.findAll()
+                  .then((comments) => {
+                    expect(err).toBeNull();
+                    expect(comments.length).toBe(commentCountBeforeDelete);
+                    done();
+                  })
+              });
+           });
+         });
+      });
     });
 
   });
+
+  describe("admin user performing CRUD actions for comment", () => {
+
+    beforeEach((done) => {
+      request.get({
+        url: "http://localhost:3000/auth/fake",
+        form: {
+          role: "admin"
+        }
+      }, (err, res, body) => {
+        done();
+      });
+    });
+
+
+    describe("POST /topics/:topicId/posts/:postId/comments/:id/destroy", () => {
+
+
+      it("should delete the comment with the associated ID", (done) => {
+
+        Comment.findAll()
+        .then((comments) => {
+          const commentCountBeforeDelete = comments.length;
+
+          expect(commentCountBeforeDelete).toBe(1);
+
+          request.post(
+            `${base}${this.topic.id}/posts/${this.post.id}/comments/${this.comment.id}/destroy`,
+            (err, res, body) => {
+              expect(res.statusCode).toBe(302);
+
+              Comment.findAll()
+              .then((comments) => {
+                expect(err).toBeNull();
+                expect(comments.length).toBe(commentCountBeforeDelete - 1);
+                done();
+              })
+            }
+          )
+        });
+      });
+    });
+
+
+  });
+
+
 
 });
