@@ -3,6 +3,7 @@ const Topic = require("./models").Topic;
 const User = require("./models").User;
 const Comment = require("./models").Comment
 const Authorizer = require("../policies/post");
+const Vote = require("./models").Vote;
 
 module.exports = {
 
@@ -18,13 +19,19 @@ module.exports = {
 
   getPost(id, callback) {
     return Post.findById(id, {
-      include: [{
-        model: Comment,
-        as: "comments",
-        include: [{
-          model: User
-        }]
-      }]
+      include: [
+        {
+          model: Comment,
+          as: "comments",
+          include: [{
+            model: User
+          }]
+        },
+        {
+          model: Vote,
+          as: "votes"
+        }
+      ]
     })
     .then((post) => {
       callback(null, post);
