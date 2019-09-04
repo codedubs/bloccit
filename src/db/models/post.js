@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  Post.prototype.getPoints = function() {
+  Post.prototype.getPoints = function() { console.log("votes legnth", this.votes.length)
     if(this.votes.length === 0) return 0
 
     return this.votes
@@ -51,6 +51,24 @@ module.exports = (sequelize, DataTypes) => {
       .reduce((prev, next) => {
         return prev + next
       });
+  };
+
+  Post.prototype.hasUpvoteFor = function(userId) { console.log("this vote", this.votes)
+    for (const vote of this.votes) {
+      if (vote.value === 1 && vote.userId === userId) {
+        return true;
+      }
+    };
+    return false;
+  };
+
+  Post.prototype.hasDownvoteFor = function(userId) {
+    for (const vote of this.votes) {
+      if (vote.value === -1 && vote.userId === userId) {
+        return true;
+      }
+    };
+    return false;
   };
 
   return Post;

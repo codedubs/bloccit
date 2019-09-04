@@ -116,6 +116,38 @@ describe("Vote", () => {
         done();
       })
     });
+
+    it("should not create a vote with a value of anything other than 1 or -1", (done) => {
+      Vote.create({
+        value: 2,
+        postId: this.post.id,
+        userId: this.user.id
+      })
+      .then((vote) => {
+        done();
+      })
+      .catch((err) => {
+        expect(err.message).toContain("Validation error: Validation isIn on value failed");
+        done();
+      });
+    });
+
+    it("should not create more than one vote per user per post", (done) => {
+      Vote.create({
+        value: 1,
+        value: -1,
+        postId: this.post.id,
+        userId: this.user.id
+      })
+      .then((vote) => {
+        done();
+      })
+      .catch((err) => {
+        expect(err.message).toContain("Vote.value cannot have more than one value per vote");
+        done();
+      });
+    });
+
   });
 
   describe("setUser()", () => {
@@ -229,7 +261,101 @@ describe("Vote", () => {
     });
   });
 
+  describe("#getPoints()", () => {
 
+    it("should return the total points for associated post", (done) => {
+
+      Vote.create({
+        value: 1,
+        postId: this.post.id,
+        userId: this.user.id
+      })
+      .then(() => {
+        User.create({
+          email: "user2@email.com",
+          password: "pword"
+        })
+        .then((user) => {
+          Vote.create({
+            value: 1,
+            postId: this.post.id,
+            userId: user.id
+          })
+          .then(() => {
+            Post.findById(this.post.id, {
+              include: [
+                { model: Vote, as: "votes"}
+              ]
+            })
+            .then((post) => {
+              expect(post.getPoints()).toBe(2);
+              done();
+            });
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          fail();
+          done();
+        });
+      });
+    });
+  });
+
+
+  describe("#hasUpvoteFor()", () => {
+
+    it("should determine if user has upvote for associated post", (done) => {
+      Vote.create({
+        value: 1,
+        postId: this.post.id,
+        userId: this.user.id
+      })
+      .then(() => {
+        /* this.post.hasUpvoteFor(this.user.id) */
+        Post.findById(this.post.id, {
+          include: [
+            { model: Vote, as: 'votes' }
+          ]
+        })
+        .then((post) => {
+          expect(post.hasUpvoteFor(this.user.id)).toBe(true);
+          done();
+        })
+      })
+      .catch((err) => {
+        console.log(err);
+        fail();
+        done();
+      });
+    });
+  });
+
+  describe("#hasDownvoteFor()", () => {
+
+    it("should determine if user has downvote for associated post", (done) => {
+      Vote.create({
+        value: -1,
+        postId: this.post.id,
+        userId: this.user.id
+      })
+      .then((vote) => {
+        Post.findById(this.post.id, {
+          include: [
+            { model: Vote, as: 'votes'}
+          ]
+        })
+      })
+      .then((post) => {
+        expect(post.hasDownvoteFor(this.user.id)).toBe(true);
+        done();
+      })
+      .catch((err) => {
+        console.log(err);
+        done();
+      });
+    });
+  });
 
 
 
