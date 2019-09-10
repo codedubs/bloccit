@@ -4,12 +4,16 @@ const Authorizer = require("../policies/topic");
 
 
 module.exports = {
+
+
   index(req, res, next) {
+
+
     topicQueries.getAllTopics((err, topics) => {
       if(err) {
         res.redirect(500, "static/index");
       } else {
-        res.render("topics/index", {topics});
+        res.render("topics/index", { topics });
       }
     })
   },
@@ -51,7 +55,7 @@ module.exports = {
       if(err || topic == null) {
         res.redirect(404, "/");
       } else {
-        res.render("topics/show", {topic});
+        res.render("topics/show", { topic });
       }
     });
   },

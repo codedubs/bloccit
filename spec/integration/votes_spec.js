@@ -73,22 +73,30 @@ describe("routes : votes", () => {
         const options = {
           url: `${base}${this.topic.id}/posts/${this.post.id}/votes/upvote`
         };
-        request.get(options, (err, res, body) => {
-          Vote.findOne({
-            where: {
-              userId: this.user.id,
-              postId: this.post.id
-            }
-          })
-          .then((vote) => {
-            expect(vote).toBeNull();
-            done();
-          })
-          .catch((err) => {
-            console.log(err);
-            done();
+
+        const queryOptions = {
+          where: {
+            userId: this.user.id,
+            postId: this.post.id
+          }
+        };
+
+        Vote.findAll(queryOptions)
+        .then((voteCountBeforeDelete) => {
+
+          request.get(options, (err, res, body) => {
+            Vote.findAll(queryOptions)
+            .then((votes) => {
+              expect(votes.length).toBe(voteCountBeforeDelete.length);
+              done();
+            })
+            .catch((err) => {
+              console.log(err);
+              fail();
+              done();
+            });
           });
-        });
+        })
       });
     });
 

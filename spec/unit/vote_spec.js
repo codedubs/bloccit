@@ -265,12 +265,6 @@ describe("Vote", () => {
 
     it("should return the total points for associated post", (done) => {
 
-      Vote.create({
-        value: 1,
-        postId: this.post.id,
-        userId: this.user.id
-      })
-      .then(() => {
         User.create({
           email: "user2@email.com",
           password: "pword"
@@ -298,7 +292,7 @@ describe("Vote", () => {
           fail();
           done();
         });
-      });
+
     });
   });
 
