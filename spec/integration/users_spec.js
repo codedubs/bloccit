@@ -5,7 +5,10 @@ const User = require("../../src/db/models").User;
 const Topic = require("../../src/db/models").Topic;
 const Post = require("../../src/db/models").Post;
 const Comment = require("../../src/db/models").Comment;
+const Favorite = require("../../src/db/models").Favorite;
 const sequelize = require("../../src/db/models/index").sequelize;
+
+
 
 describe("routes : users", () => {
 
@@ -96,6 +99,7 @@ describe("routes : users", () => {
       this.user;
       this.post;
       this.comment;
+      this.favorite;
 
       User.create({
         email: "starman@tesla.com",
@@ -119,6 +123,7 @@ describe("routes : users", () => {
           }
         })
         .then((res) => {
+          this.topic = res;
           this.post = res.posts[0];
 
           Comment.create({
@@ -143,7 +148,54 @@ describe("routes : users", () => {
       });
     });
 
+  it("should present a list of favorited posts a user has", (done) => {
+
+    User.create({
+      email: "starman2@cor.com",
+      password: "newuser"
+    })
+    .then((user) => {
+
+      Topic.create({
+        title: "Winter Fun",
+        description: "Post your Winter Fun.",
+        userId: user.id,
+        posts: [{
+          title: "Happy Fun this is",
+          body: "So much snow!",
+          userId: user.id
+        }]
+      }, {
+        include: {
+          model: Post,
+          as: "posts"
+        }
+      })
+      .then((topic) => {
+
+        let post = topic.posts[0];
+
+        request.get({
+          url: "http://localhost:3000/auth/fake",
+          form: {
+            role: "member",
+            userId: this.user.id
+          }
+        }, (err, res, body) => {
+          request.post(`http://localhost:3000/topics/${topic.id}/posts/${post.id}/favorites/create`, (err, res, body) => {
+            expect(body).not.toBeNull();
+            expect(res.statusCode).toBe(302);
+
+            request.get(`${base}${this.user.id}`, (err, res, body) => {
+              expect(body).toContain(post.title);
+              done();
+            });
+          });
+        });
+      });
+    });
   });
 
+  });
 
 });

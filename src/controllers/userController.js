@@ -57,10 +57,10 @@ module.exports = {
       if(err || result.user === undefined) {
         req.flash("notice", "No user found with that ID." );
         res.redirect("/");
-      } else {
+      } else { console.log(result.favorites.length, result.favorites[0].Post.title)
         res.render("users/show", {...result});
       }
     });
   }
-  
+
 }

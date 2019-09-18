@@ -16,7 +16,7 @@
 
       <hr>
 
-      <h2> Latest Posts</h2>
+      <h2> Latest Posts </h2>
 
       <ul class="list-unstyled">
 
@@ -34,14 +34,29 @@
       </ul>
       <hr>
 
-      <h2> Latest Comments</h2>
+      <h2> Favorited Posts </h2>
+
+      <ul class="list-unstyled">
+ <!-- #2 -->
+           <% if(favorites) { %>
+             <% favorites.forEach((favorite) => { %>
+    <!-- #3 -->
+               <li>
+                 <a href="/topics/<%= favorite.Post.topicId %>/posts/<%= favorite.Post.id %>">
+                   <%= favorite.Post.title %>
+                 </a>
+               </li>
+             <% }) %>
+          <% } %>
+      </ul>
+
+      <h2> Latest Comments </h2>
 
       <ul class="list-unstyled">
 
  <!-- #4 -->
         <% if(comments) { %>
           <% comments.forEach((comment) => { %>
-
  <!-- #5 -->
             <li>
               <span>Post: </span><a href="/topics/<%= comment.Post.topicId %>/posts/<%= comment.Post.id %>">
@@ -53,6 +68,7 @@
           <% }) %>
         <% } %>
       </ul>
+
     </main>
 
     <% include ../static/partials/baseScripts.ejs %>

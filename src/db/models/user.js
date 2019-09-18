@@ -40,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       as: "favorites"
     });
 
+  
   };
 
   User.prototype._isAdmin = function() {
